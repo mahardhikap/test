@@ -3,8 +3,8 @@ Apakah garis pemisah antar post juga menyusut menyesuaikan tinggi post dan gamba
 Apakah menggunakan data api yang sudah disediakan?
 
 ## C1
-Saya tidak paham
+-
 
 ## C2
 
-Saya tidak paham
+-
