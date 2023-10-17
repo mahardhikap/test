@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Button,
   Image,
@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 import IconBack from '../assets/back.png';
 import IconBlock from '../assets/block.png';
@@ -19,9 +19,29 @@ import IconDownvoteInactive from '../assets/downvote_inactive.png';
 import IconShare from '../assets/share.png';
 import IconUpvoteActive from '../assets/upvote_active.png';
 import IconUpvoteInactive from '../assets/upvote_inactive.png';
+import { useData } from './VoteContext';
 
 function PostDetailScreen() {
+  const route = useRoute()
   const navigation = useNavigation();
+  const {id} = route.params;
+  const {data, upvotePost, downvotePost, addComment} = useData()
+  const [inputComment, setInputComment] = useState('')
+  const handleUpVote = (id) => {
+    upvotePost(id)
+  }
+  const handleDownVote = (id) => {
+    downvotePost(id)
+  }
+
+  const handleComment = (postId, commentText) => {
+    if (commentText) {
+      addComment(postId, commentText);
+      setInputComment(''); // Mengosongkan input setelah mengirim komentar
+    }
+  };
+
+
   return (
     <SafeAreaView>
       <ScrollView style={{marginBottom: 48}}>
@@ -51,7 +71,7 @@ function PostDetailScreen() {
             <View style={{marginLeft: 16}}>
               <Text
                 style={{fontWeight: '600', fontSize: 14, lineHeight: 16.94}}>
-                Usup Suparma
+                {data[id-1].name}
               </Text>
               <Text style={{fontWeight: '400', fontSize: 12, lineHeight: 18}}>
                 Mar 27, 2023
@@ -120,7 +140,7 @@ function PostDetailScreen() {
                 width={18}
                 style={{marginLeft: 22}}
               />
-              <Pressable onPress={() => console.log('downvote')}>
+              <Pressable onPress={() => handleDownVote(id)}>
                 <Image
                   source={IconDownvoteInactive}
                   height={18}
@@ -134,9 +154,9 @@ function PostDetailScreen() {
                   marginHorizontal: 11,
                   textAlign: 'center',
                 }}>
-                0
+                {data[id-1].upVote}
               </Text>
-              <Pressable onPress={() => console.log('upvote')}>
+              <Pressable onPress={() => handleUpVote(id)}>
                 <Image
                   source={IconUpvoteInactive}
                   height={18}
@@ -173,14 +193,18 @@ function PostDetailScreen() {
               }}>
               Usup Suparma
             </Text>
-            <Text style={{fontWeight: '400', fontSize: 16, lineHeight: 19.36}}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-              luctus in ipsum ac dictum. Integer et nunc ut tellus tinci,
-            </Text>
+            {data[id-1]?.comment.map((comment, index) => {
+              return (
+              <Text style={{fontWeight: '400', fontSize: 16, lineHeight: 19.36}} key={index}>
+              {comment.text}
+              </Text>
+              )
+            })}
+            
           </View>
         </View>
         <View style={{height: 0.5, backgroundColor: '#C4C4C4'}} />
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             minHeight: 72,
@@ -211,8 +235,8 @@ function PostDetailScreen() {
             </Text>
           </View>
         </View>
-        <View style={{height: 0.5, backgroundColor: '#C4C4C4'}} />
-        <View
+        <View style={{height: 0.5, backgroundColor: '#C4C4C4'}} /> */}
+        {/* <View
           style={{
             flexDirection: 'row',
             minHeight: 72,
@@ -242,7 +266,7 @@ function PostDetailScreen() {
               luctus in ipsum ac dictum. Integer et nunc ut tellus tinci,
             </Text>
           </View>
-        </View>
+        </View> */}
         <View style={{height: 0.5, backgroundColor: '#C4C4C4'}} />
       </ScrollView>
       <View
@@ -257,8 +281,8 @@ function PostDetailScreen() {
           zIndex: 10,
         }}>
         <View style={{height: 0.5, backgroundColor: '#C4C4C4'}} />
-        <TextInput placeholder="Enter Comment" style={{flex: 1}} />
-        <Button title="Comment" onPress={() => console.log('comment')} />
+        <TextInput placeholder="Enter Comment" style={{flex: 1}} onChangeText={value => setInputComment(value)} value={inputComment}/>
+        <Button title="Comment" onPress={() => handleComment(id-1, inputComment)} />
       </View>
     </SafeAreaView>
   );
